@@ -38,6 +38,40 @@
 			///////////////////////////////////////////////////////////////////////////////////////
 			
 			
+			
+            // work out spaces on y axis
+            function findNiceRoundStep(delta, preferedStep){
+                var log10, n, p, p10, digit;
+                log10 = Math.log(10.0);
+                function powOf10(n){
+                    return Math.floor(Math.log(n) / log10);
+                }
+                n = delta / preferedStep;
+                p = powOf10(n);
+                p10 = Math.pow(10, p);
+                digit = n / p10;
+                if (digit < 1.5) {
+                    digit = 1;
+                }
+                else 
+                    if (digit < 3.5) {
+                        digit = 2;
+                    }
+                    else 
+                        if (digit < 7.5) {
+                            digit = 5;
+                        }
+                        else {
+                            p += 1;
+                            p10 = Math.pow(10, p);
+                            digit = 1;
+                        }
+                return digit * p10;
+            }
+			
+			
+			
+			
 			var area,points, minYdummyData,maxYdummyData;
 			
             function randomNumber(from, to){
@@ -134,6 +168,35 @@
 								
 			}
 			
+            var ySpaces = 6;
+			
+            var ySpaceGaps = findNiceRoundStep(yScope, ySpaces);
+			
+            var yLineBottomValue = Math.floor(minDataPoint / ySpaceGaps) * ySpaceGaps;
+            var yLineTopValue = yLineBottomValue;
+			
+			for(var i = 0 ; i < (ySpaces * 2) ; i++){
+				
+				if(yLineTopValue < maxDataPoint){
+					yLineTopValue += ySpaceGaps;
+				} else {
+					break;
+				}
+				
+			}
+			
+			yScope = yLineTopValue - yLineBottomValue;
+			
+			
+			// test yScale
+			console.log(yLineTopValue);
+			console.log(maxDataPoint);
+			console.log(ySpaceGaps);
+			console.log(minDataPoint);
+			console.log(yLineBottomValue);
+			
+			
+			
 			var yMultiplier = chartHeight / yScope;
 			
 			var xMultiplier = chartWidth / ( Number(data.length)   - 1) ;
@@ -150,7 +213,7 @@
 			
 			
 			if (maxDataPoint > -1 &&  minDataPoint < -1 ){
-				basePoint = margin + chartHeight -  ((minDataPoint * -1) * yMultiplier);
+				basePoint = margin + chartHeight -  ((yLineBottomValue * -1) * yMultiplier);
 			}			
 			
 			
@@ -160,12 +223,12 @@
 			//canvas.path("M" + margin + "," + margin + "l" + chartWidth + ","  + chartHeight  ).attr('stroke',"green");			
 
 			//var line_ = "M" + (margin+(0 * xMultiplier)) + "," + basePoint  + "L" + (margin+(0 * xMultiplier)) + "," + ((margin + chartHeight) -((data[0] - minDataPoint) * yMultiplier));
-			var path_ = "" + (margin+(0 * xMultiplier)) + "," + ((margin + chartHeight) -((data[0] - minDataPoint) * yMultiplier));
+			var path_ = "" + (margin+(0 * xMultiplier)) + "," + ((margin + chartHeight) -((data[0] - yLineBottomValue) * yMultiplier));
 
 
             for (var i = 1; i < data.length; i++) {
 
-				path_ += "L" + (margin+(i * xMultiplier)) + "," + ((margin + chartHeight) - ((data[i] - minDataPoint) * yMultiplier));
+				path_ += "L" + (margin+(i * xMultiplier)) + "," + ((margin + chartHeight) - ((data[i] - yLineBottomValue) * yMultiplier));
 				
             }
 			
@@ -185,10 +248,40 @@
                 canvas.path("M" + path_).attr('stroke', "red");
             }
 			
+			// draw horizontal lines
 			
 			
 			
+			// test yScale
+			console.log(yLineTopValue);
+			console.log(maxDataPoint);
+			console.log(ySpaceGaps);
+			console.log(minDataPoint);
+			console.log(yLineBottomValue);			
 			
+			
+			for(var i = 0 ; i < (ySpaces * 2) ; i++){
+				
+				if((yLineBottomValue + (i * ySpaceGaps) ) <= yLineTopValue){
+					
+					var y_ = ((margin + chartHeight) - ((i * ySpaceGaps) * yMultiplier )  ) ;
+
+			// line
+			canvas.path("M" + margin + "," + y_ + "l" + chartWidth + ",0" ).attr('stroke', "black");
+			
+			// test
+			canvas.text(margin - 5, y_, (yLineBottomValue + (i * ySpaceGaps) )).attr("text-anchor","end");
+
+
+
+				} else {
+					break;
+				}
+				
+			}			
+			
+			
+
 			
 
 			//alert(data[0] + " " + data[data.length - 1]);
