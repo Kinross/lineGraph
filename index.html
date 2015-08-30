@@ -69,7 +69,118 @@
                 return digit * p10;
             }
 			
-			
+            
+            function getNumberView(startValue, numberValue, endValue){
+            
+                var divideBy, reternValue, regex, negativeNumber = false, endAbbreviation = "", i, devider = "1", codes;
+                
+                
+                
+                // verifying arguments
+                startValue = startValue || "";
+                numberValue = numberValue || 0;
+                endValue = endValue || "";
+                if (typeof numberValue !== "number") {
+                    console.log("\nWARNING: you may get an unexpected display string returned from function 'getNumberView' because the second argument should be a number type, you are passing '" + numberValue + "' which is a " + typeof numberValue + " type");
+                    if (isNaN(numberValue)) {
+                        console.log("\nERROR: in function 'getNumberView' you are passing in " + numberValue + "\nand because of this the function can't make your second argument into a number which is needed to return you a correct display string\n");
+                        startValue = "";
+                        numberValue = 0;
+                        endValue = "";
+                    }
+                }
+                
+                
+                codes = [{
+                    zeros: 0,
+                    name: "",
+                    abbreviation: ""
+                }, {
+                    zeros: 3,
+                    name: "thousand",
+                    abbreviation: "K"
+                }, {
+                    zeros: 6,
+                    name: "million",
+                    abbreviation: "MM"
+                }, {
+                    zeros: 9,
+                    name: "billion",
+                    abbreviation: "Bn"
+                }, {
+                    zeros: 12,
+                    name: "trillion",
+                    abbreviation: "Tn"
+                }, {
+                    zeros: 15,
+                    name: "quadrillion",
+                    abbreviation: "Qdn"
+                }, {
+                    zeros: 18,
+                    name: "quintillion",
+                    abbreviation: "Qtn"
+                }, {
+                    zeros: 21,
+                    name: "sextillion",
+                    abbreviation: "Stn"
+                }];
+                
+                reternValue = Math.abs(numberValue);
+                
+                if (reternValue !== numberValue) {
+                    negativeNumber = true;
+                }
+                
+                reternValue = Math.ceil(reternValue);
+                reternValue = reternValue.toString();
+                endAbbreviation = Math.floor(Number(reternValue.length) / 3);
+                
+                for (i = 0; i < codes[Math.floor(Number(reternValue.length - 1) / 3)].zeros; i += 1) {
+                    devider += "0";
+                }
+                
+                reternValue = Number(numberValue) / Number(devider);
+                reternValue = Math.abs(reternValue);
+                
+                if (reternValue >= 100 && endAbbreviation > 0) {
+                    endAbbreviation -= 1;
+                }
+                endAbbreviation = codes[endAbbreviation].abbreviation;
+                
+                // get first 8 letters
+                regex = /^[\s\S]{0,8}/;
+                reternValue = regex.exec(reternValue).toString();
+                
+                reternValue = Number(reternValue);
+                
+                divideBy = 100;
+                
+                if (reternValue >= 10) {
+                    divideBy = 10;
+                }
+                if (reternValue >= 100) {
+                    divideBy = 1;
+                }
+                
+                reternValue = Number(reternValue) * divideBy;
+                
+                reternValue = Math.round(reternValue);
+                
+                reternValue = reternValue / divideBy;
+                
+                if (reternValue === 0) {
+                    negativeNumber = false;
+                }
+                if (reternValue != 0) {
+					reternValue = (startValue + reternValue + endValue + endAbbreviation).toString();
+				}
+				
+                if (negativeNumber) {
+                    reternValue = "-" + reternValue;
+                }
+                
+                return reternValue;
+            }
 			
 			
 			var area,points, minYdummyData,maxYdummyData;
@@ -80,8 +191,8 @@
 			
 			points = randomNumber(10, 300);
 			area = randomNumber(0, 1);
-			minYdummyData = randomNumber(-5000, 5000);
-			maxYdummyData =  minYdummyData + (randomNumber(-5000, 5000));
+			minYdummyData = randomNumber(-50000000, 50000000);
+			maxYdummyData =  minYdummyData + (randomNumber(-50000000, 50000000));
 			
             //make a data set
             var data = [];
@@ -168,7 +279,7 @@
 								
 			}
 			
-            var ySpaces = 6;
+            var ySpaces = 5;
 			
             var ySpaceGaps = findNiceRoundStep(yScope, ySpaces);
 			
@@ -270,8 +381,7 @@
 			canvas.path("M" + margin + "," + y_ + "l" + chartWidth + ",0" ).attr('stroke', "black");
 			
 			// test
-			canvas.text(margin - 5, y_, (yLineBottomValue + (i * ySpaceGaps) )).attr("text-anchor","end");
-
+			canvas.text(margin - 5, y_, getNumberView("£" , (yLineBottomValue + (i * ySpaceGaps) )) , "").attr("text-anchor","end");
 
 
 				} else {
