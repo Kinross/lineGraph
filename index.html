@@ -1,0 +1,226 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+        <title>Line Graph</title>
+        <script src="libraries/raphael.js">
+        </script>
+        <script src="libraries/jquery-2.0.0.min.js">
+        </script>
+        <style>
+            
+            *, body {
+                margin: 0;
+                padding: 0;
+            };
+            * {
+                width: 100%;
+                height: 100%;
+            }
+        </style>
+    </head>
+    <body>
+        <div id='graphic'>
+        </div>
+        <script>
+            
+			var area = true;
+			var points = 50;
+			
+			
+			///////////////////////////////////////////////////////////////////////////////////////
+			// How tine stamps work...
+			//var myDate = new Date();
+			//var milliseconds = new Date().getTime();
+            //var myMonth = (myDate.getMonth() + 1);
+            //var myYear = (myDate.getFullYear());
+			//var myDay = myDate.getUTCDate();
+			//alert( myDay + ',' + myMonth + ',' + myYear);
+			//alert( milliseconds + " " + new Date(myYear,myMonth,myDay).getTime());
+			///////////////////////////////////////////////////////////////////////////////////////
+			
+			
+            
+			
+            function randomNumber(from, to){
+                return Math.floor(Math.random() * (to - from + 1) + from);
+            }
+			
+			area = randomNumber(0, 1);
+			
+            //make a data set
+            var data = [];
+            var dates = [];
+			var years = 1970;
+            for (var i = 0; i < points; i++) {
+                data.push(randomNumber(-500, 543));
+				dates.push(randomNumber(1, 28) + "/" + randomNumber(1, 12) + "/" + years);
+				years += randomNumber(1, 3);
+            }
+			
+			/*
+            for (var i = 0; i < 5; i++) {
+				var date_ = (dates[i]).split("/");
+				alert( date_ + " " + new Date(date_[2],date_[1] - 1,date_[0]));
+            }		
+			*/
+            
+			var pageHeight = $(window).height();
+			var pageWidth= $(window).width();
+			
+			
+            
+            var canvas = Raphael("graphic", pageWidth , pageHeight );
+			
+			var margin = pageWidth / 10;
+			
+			var chartX = margin;
+			var chartY = margin;
+			var chartWidth = pageWidth - margin - margin;
+			var chartHeight = pageHeight - margin - margin;
+			
+			// background
+			canvas.path("M" + margin + "," + margin + "l" + chartWidth + ",0l0,"  + chartHeight + "l-" + chartWidth + ",0z"  ).attr({'stroke-width':"0","fill":"#ededed"});
+			
+
+			var widthMultiplier = 0;
+			var heightMultiplier = 0;
+			
+			
+			var maxDataPoint = data[0];
+			var minDataPoint = data[0];
+			
+			
+            for (var i = 0; i < data.length; i++) {
+                if(maxDataPoint < data[i]){
+					maxDataPoint = data[i];
+				}
+                if(minDataPoint > data[i]){
+					minDataPoint = data[i];
+				}				
+            }			
+			
+			//alert( maxDataPoint + " " + minDataPoint);
+			
+			
+			
+			var yScope = 0;
+			
+			var basePoint = margin + chartHeight;
+			
+			
+			if (maxDataPoint < -1 &&  minDataPoint < -1 ){
+				
+				//alert('both -' );
+				yScope = maxDataPoint - minDataPoint;
+				//alert(yScope);
+				
+				basePoint = margin;
+				
+			}  else if(maxDataPoint > -1 &&  minDataPoint > -1 ){
+				
+				//alert('both +' );
+				yScope = maxDataPoint - minDataPoint;
+				//alert(yScope);
+				
+				basePoint = margin + chartHeight;
+								
+			} else {
+				
+				//alert('one + and 1 -' );
+				yScope = maxDataPoint + ( -1 * minDataPoint);
+				//alert(yScope);
+								
+			}
+			
+			var yMultiplier = chartHeight / yScope;
+			
+			var xMultiplier = chartWidth / Number(data.length) + (0.00333 / 2)  ;
+			
+            for (var i = 0; i < data.length; i++) {
+                if(maxDataPoint < data[i]){
+					maxDataPoint = data[i];
+				}
+                if(minDataPoint > data[i]){
+					minDataPoint = data[i];
+				}				
+            }
+			
+			
+			
+			if (maxDataPoint > -1 &&  minDataPoint < -1 ){
+				basePoint = margin + chartHeight -  ((minDataPoint * -1) * yMultiplier);
+			}			
+			
+			
+						
+			
+			//line
+			//canvas.path("M" + margin + "," + margin + "l" + chartWidth + ","  + chartHeight  ).attr('stroke',"green");			
+
+			//var line_ = "M" + (margin+(0 * xMultiplier)) + "," + basePoint  + "L" + (margin+(0 * xMultiplier)) + "," + ((margin + chartHeight) -((data[0] - minDataPoint) * yMultiplier));
+			var path_ = "" + (margin+(0 * xMultiplier)) + "," + ((margin + chartHeight) -((data[0] - minDataPoint) * yMultiplier));
+
+
+            for (var i = 1; i < data.length; i++) {
+
+				path_ += "L" + (margin+(i * xMultiplier)) + "," + ((margin + chartHeight) - ((data[i] - minDataPoint) * yMultiplier));
+				
+            }
+			
+			var area_ = "M" + (margin+(0 * xMultiplier)) + "," + basePoint  + "L" + path_;
+			
+			area_ += "L" + (margin+((data.length - 1) * xMultiplier)) + "," + basePoint;
+			
+            
+            if (area) {
+                canvas.path(area_).attr({
+                    'fill': "red",
+                    "opacity": 0.3,
+					'stroke': "none"
+                });
+            }
+            else {
+                canvas.path("M" + path_).attr('stroke', "red");
+            }
+			
+			
+			
+			
+			
+			
+
+			//alert(data[0] + " " + data[data.length - 1]);
+            
+            /*
+            var total = 0;
+            
+            for (var i = 0; i < data.length; i++) {
+                total += data[i];
+            }
+            
+            var multiplier = 360 / total;
+            
+            
+            var innerRadius = radius / 1.3;
+            
+            
+            var startAngle = 0;
+            var endAngle = multiplier * data[0];
+            
+            for (var i = 0; i < data.length; i++) {
+            
+                var path_ = segmentsPath(startAngle, endAngle, radius, radius, innerRadius, radius)
+                
+                canvas.path(path_);
+                
+                startAngle = 0 + endAngle;
+                endAngle += (multiplier * data[i + 1]);
+                
+            }
+            */
+			
+			
+        </script>
+    </body>
+</html>
