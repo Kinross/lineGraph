@@ -38,6 +38,16 @@
 			///////////////////////////////////////////////////////////////////////////////////////
 			
 			
+            function getTimeMilliseconds(timeStamp){
+            
+                var date_ = (timeStamp).split("/");
+                //console.log( date_ + " " + new Date(date_[2],date_[1] - 1,date_[0]));
+                
+                milliseconds = (new Date(date_[2], date_[1] - 1, date_[0]).getTime());
+                
+                return "" + milliseconds;
+            }
+			
 			
             // work out spaces on y axis
             function findNiceRoundStep(delta, preferedStep){
@@ -189,7 +199,7 @@
                 return Math.floor(Math.random() * (to - from + 1) + from);
             }
 			
-			points = randomNumber(10, 300);
+			points = randomNumber(3, 500);
 			area = randomNumber(0, 1);
 			minYdummyData = randomNumber(-50000000, 50000000);
 			maxYdummyData =  minYdummyData + (randomNumber(-50000000, 50000000));
@@ -204,13 +214,43 @@
 				years += randomNumber(1, 3);
             }
 			
-			/*
-            for (var i = 0; i < 5; i++) {
-				var date_ = (dates[i]).split("/");
-				alert( date_ + " " + new Date(date_[2],date_[1] - 1,date_[0]));
-            }		
-			*/
-            
+			var minMilliseconds,maxMilliseconds;
+			
+			// NOT WORKING!!!
+            for (var i = 0; i < points; i++) {
+				
+				milliseconds = getTimeMilliseconds(dates[i]);
+				
+				if(i == 0){
+					minMilliseconds = milliseconds;
+					maxMilliseconds = milliseconds;
+				}
+				
+				if(minMilliseconds >= milliseconds){
+					minMilliseconds = milliseconds;
+				}
+				
+				if(maxMilliseconds <= milliseconds){
+					maxMilliseconds = milliseconds;
+				}				
+				
+            }
+			
+            minMilliseconds = Number(getTimeMilliseconds(dates[0]));
+            maxMilliseconds = Number(getTimeMilliseconds(dates[dates.length - 1]));
+			
+			
+			var xScope = maxMilliseconds - minMilliseconds;
+			
+			console.log( '--------------' );
+			console.log( minMilliseconds );
+			console.log(getTimeMilliseconds(dates[0]) );			
+			console.log( maxMilliseconds );
+			console.log(getTimeMilliseconds(dates[dates.length - 1]) );			
+			console.log( xScope );
+			console.log( '--------------' );
+			
+			
 			var pageHeight = $(window).height();
 			var pageWidth= $(window).width();
 			
@@ -310,7 +350,8 @@
 			
 			var yMultiplier = chartHeight / yScope;
 			
-			var xMultiplier = chartWidth / ( Number(data.length)   - 1) ;
+			var xMultiplier = chartWidth / xScope ;
+
 			
             for (var i = 0; i < data.length; i++) {
                 if(maxDataPoint < data[i]){
@@ -321,31 +362,26 @@
 				}				
             }
 			
-			
-			
 			if (maxDataPoint > -1 &&  minDataPoint < -1 ){
 				basePoint = margin + chartHeight -  ((yLineBottomValue * -1) * yMultiplier);
 			}			
 			
-			
-						
-			
 			//line
 			//canvas.path("M" + margin + "," + margin + "l" + chartWidth + ","  + chartHeight  ).attr('stroke',"green");			
 
-			//var line_ = "M" + (margin+(0 * xMultiplier)) + "," + basePoint  + "L" + (margin+(0 * xMultiplier)) + "," + ((margin + chartHeight) -((data[0] - minDataPoint) * yMultiplier));
-			var path_ = "" + (margin+(0 * xMultiplier)) + "," + ((margin + chartHeight) -((data[0] - yLineBottomValue) * yMultiplier));
+			var path_ = "" + (margin+((  getTimeMilliseconds(dates[0]) - minMilliseconds ) * xMultiplier)) + "," + ((margin + chartHeight) -((data[0] - yLineBottomValue) * yMultiplier));
 
+            for (var i = 1; i < dates.length; i++) {
 
-            for (var i = 1; i < data.length; i++) {
+				var x__ = (  getTimeMilliseconds(dates[i]) - minMilliseconds ) * xMultiplier;
 
-				path_ += "L" + (margin+(i * xMultiplier)) + "," + ((margin + chartHeight) - ((data[i] - yLineBottomValue) * yMultiplier));
-				
+				path_ += "L" + ( margin + x__ ) + "," + ((margin + chartHeight) - ((data[i] - yLineBottomValue) * yMultiplier));
+
             }
 			
-			var area_ = "M" + (margin+(0 * xMultiplier)) + "," + basePoint  + "L" + path_;
+			var area_ = "M" + (margin+((  getTimeMilliseconds(dates[0]) - minMilliseconds ) * xMultiplier)) + "," + basePoint  + "L" + path_;
 			
-			area_ += "L" + (margin+((data.length - 1) * xMultiplier)) + "," + basePoint;
+			area_ += "L" + (margin+((  getTimeMilliseconds(dates[dates.length - 1]) - minMilliseconds ) * xMultiplier)) + "," + basePoint;
 			
             
             if (area) {
@@ -371,25 +407,43 @@
 			console.log(yLineBottomValue);			
 			
 			
-			for(var i = 0 ; i < (ySpaces * 2) ; i++){
-				
-				if((yLineBottomValue + (i * ySpaceGaps) ) <= yLineTopValue){
-					
-					var y_ = ((margin + chartHeight) - ((i * ySpaceGaps) * yMultiplier )  ) ;
+
+            for (var i = 0; i < (ySpaces * 2); i++) {
+            
+                if ((yLineBottomValue + (i * ySpaceGaps)) <= yLineTopValue) {
+                
+                    var y_ = ((margin + chartHeight) - ((i * ySpaceGaps) * yMultiplier));
+                    
+                    // line
+                    canvas.path("M" + margin + "," + y_ + "l" + chartWidth + ",0").attr('stroke', "black");
+                    
+                    // test
+                    canvas.text(margin - 5, y_, getNumberView("£", (yLineBottomValue + (i * ySpaceGaps))), "").attr("text-anchor", "end");                    
+                }
+                else {
+                    break;
+                }
+                
+            }
+
+
+
+            var x_ = margin;
 
 			// line
-			canvas.path("M" + margin + "," + y_ + "l" + chartWidth + ",0" ).attr('stroke', "black");
+			canvas.path("M" + x_ + "," + margin + "l0," + chartHeight ).attr('stroke', "black");
 			
 			// test
-			canvas.text(margin - 5, y_, getNumberView("£" , (yLineBottomValue + (i * ySpaceGaps) )) , "").attr("text-anchor","end");
-
-
-				} else {
-					break;
-				}
-				
-			}			
+			canvas.text(x_ , (margin + chartHeight + 10), getTimeMilliseconds(dates[0])).attr("text-anchor","middle");
 			
+			x_ += (  getTimeMilliseconds(dates[dates.length - 1]) - minMilliseconds ) * xMultiplier;
+
+			canvas.path("M" + x_ + "," + margin + "l0," + chartHeight ).attr('stroke', "black");
+			
+			// test
+			canvas.text(x_ , (margin + chartHeight + 10), getTimeMilliseconds(dates[points - 1])).attr("text-anchor","middle");
+
+		
 			
 
 			
