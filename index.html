@@ -38,6 +38,174 @@
 			///////////////////////////////////////////////////////////////////////////////////////
 			
 			
+            var DAY = 1000 * 60 * 60 * 24;
+            var HOUR = 1000 * 60 * 60;
+            var YEAR = 1000 * 60 * 60 * 24 * 365.25;
+            
+            var DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+            var MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            
+            var getHours = function(time){
+                return (new Date(time).getHours()) + ":00";
+            };
+            
+            var getWeekDays = function(time){
+                return DAYS[new Date(time).getDay()];
+            };
+            
+            var getMonthDays = function(time){
+                return new Date(time).getDate();
+            };
+            
+            var getMonths = function(time){
+                return MONTHS[new Date(time).getMonth()];
+            };
+            
+            var getYears = function(time){
+                return new Date(time).getFullYear();
+            };
+            
+            var getMonthTimeStamp = function(time, monthsNo){
+                var someMonths, someYears;
+                someYears = new Date(time).getFullYear();
+                someMonths = new Date(time).getMonth();
+                someMonths += monthsNo;
+                if (someMonths > 11) {
+                    someMonths -= 12;
+                    someYears += 1;
+                }
+                return (new Date(someYears, someMonths, 1).getTime());
+                //return time;
+            };
+            
+            var getYearTimeStamp = function(time, yearsNo){
+                var someYears = new Date(time).getFullYear();
+                someYears += yearsNo;
+                return new Date(someYears, 0, 1).getTime();
+                //return time;
+            };
+            
+            var getHourTimeStamp = function(time, hoursNo){
+                var someDate = new Date(time);
+                return new Date(someDate.getFullYear(), someDate.getMonth(), someDate.getDate(), someDate.getHours()).getTime() + (hoursNo * HOUR);
+                
+            };
+            
+            var getDayTimeStamp = function(time, daysNo){
+                var someDate = new Date(time);
+                return new Date(someDate.getFullYear(), someDate.getMonth(), someDate.getDate()).getTime() + (daysNo * DAY);
+            };
+		
+			
+			
+            
+            var xAxisScaleTemplateSets = [{
+                "scope": DAY / 12,
+                "getText": getHours,
+                "getTimeStamp": getHourTimeStamp,
+                "alert": "1 hour increment",
+                "increment": 1
+            }, {
+                "scope": DAY / 4,
+                "getText": getHours,
+                "getTimeStamp": getHourTimeStamp,
+                "alert": "2 hour increment",
+                "increment": 2
+            }, {
+                "scope": DAY / 2,
+                "getText": getHours,
+                "getTimeStamp": getHourTimeStamp,
+                "alert": "6 hour increment",
+                "increment": 6
+            }, {
+                "scope": DAY,
+                "getText": getHours,
+                "getTimeStamp": getHourTimeStamp,
+                "alert": "12 hour increment",
+                "increment": 12
+            }, {
+                "scope": DAY * 2,
+                "getText": getWeekDays,
+                "getTimeStamp": getDayTimeStamp,
+                "alert": "1 day increment",
+                "increment": 1
+            }, {
+                "scope": DAY * 7,
+                "getText": getWeekDays,
+                "getTimeStamp": getDayTimeStamp,
+                "alert": "2 day increment",
+                "increment": 2
+            }, {
+                "scope": YEAR / 12,
+                "getText": getMonthDays,
+                "getTimeStamp": getDayTimeStamp,
+                "alert": "7 day increment",
+                "increment": 7
+            }, {
+                "scope": YEAR / 6,
+                "getText": getMonths,
+                "getTimeStamp": getMonthTimeStamp,
+                "alert": "7 day increment",
+                "increment": 1
+            }, {
+                "scope": YEAR / 4,
+                "getText": getMonths,
+                "getTimeStamp": getMonthTimeStamp,
+                "alert": "1 month increment",
+                "increment": 1
+            }, {
+                "scope": YEAR / 2,
+                "getText": getMonths,
+                "alert": "3 month increment",
+                "getTimeStamp": getMonthTimeStamp,
+                "increment": 3
+            }, {
+                "scope": YEAR,
+                "getText": getMonths,
+                "alert": "6 month increment",
+                "getTimeStamp": getMonthTimeStamp,
+                "increment": 6
+            }, {
+                "scope": YEAR * 2,
+                "getText": getYears,
+                "alert": "1 year increment",
+                "getTimeStamp": getYearTimeStamp,
+                "increment": 1
+            }, {
+                "scope": YEAR * 5,
+                "getText": getYears,
+                "alert": "2 year increment",
+                "getTimeStamp": getYearTimeStamp,
+                "increment": 2
+            }, {
+                "scope": YEAR * 10,
+                "getText": getYears,
+                "alert": "5 year increment",
+                "getTimeStamp": getYearTimeStamp,
+                "increment": 5
+            }, {
+                "scope": YEAR * 20,
+                "getText": getYears,
+                "alert": "10 year increment",
+                "getTimeStamp": getYearTimeStamp,
+                "increment": 10
+            }, {
+                "scope": YEAR * 50,
+                "getText": getYears,
+                "alert": "25 year increment",
+                "getTimeStamp": getYearTimeStamp,
+                "increment": 25
+            }, {
+                "scope": YEAR * 100,
+                "getText": getYears,
+                "alert": "50 year increment",
+                "getTimeStamp": getYearTimeStamp,
+                "increment": 50
+            }];
+            
+            			
+			
+			
             function getTimeMilliseconds(timeStamp){
             
                 var date_ = (timeStamp).split("/");
@@ -83,7 +251,6 @@
             function getNumberView(startValue, numberValue, endValue){
             
                 var divideBy, reternValue, regex, negativeNumber = false, endAbbreviation = "", i, devider = "1", codes;
-                
                 
                 
                 // verifying arguments
@@ -199,7 +366,7 @@
                 return Math.floor(Math.random() * (to - from + 1) + from);
             }
 			
-			points = randomNumber(3, 500);
+			points = randomNumber(2, 200);
 			area = randomNumber(0, 1);
 			minYdummyData = randomNumber(-50000000, 50000000);
 			maxYdummyData =  minYdummyData + (randomNumber(-50000000, 50000000));
@@ -242,6 +409,7 @@
 			
 			var xScope = maxMilliseconds - minMilliseconds;
 			
+			
 			console.log( '--------------' );
 			console.log( minMilliseconds );
 			console.log(getTimeMilliseconds(dates[0]) );			
@@ -249,6 +417,18 @@
 			console.log(getTimeMilliseconds(dates[dates.length - 1]) );			
 			console.log( xScope );
 			console.log( '--------------' );
+			
+			
+            var xAxisScalePoint = 0;
+            for (i = 1; i < xAxisScaleTemplateSets.length; i += 1) {
+                if (xAxisScaleTemplateSets[i].scope > xScope) {
+                    break;
+                }
+                xAxisScalePoint = i;
+            }
+			
+			console.log(xAxisScaleTemplateSets[xAxisScalePoint].alert);
+				
 			
 			
 			var pageHeight = $(window).height();
@@ -434,16 +614,46 @@
 			canvas.path("M" + x_ + "," + margin + "l0," + chartHeight ).attr('stroke', "black");
 			
 			// test
-			canvas.text(x_ , (margin + chartHeight + 10), getTimeMilliseconds(dates[0])).attr("text-anchor","middle");
+			//canvas.text(x_ , (margin + chartHeight + 10), getTimeMilliseconds(dates[0])).attr("text-anchor","middle");
 			
 			x_ += (  getTimeMilliseconds(dates[dates.length - 1]) - minMilliseconds ) * xMultiplier;
 
 			canvas.path("M" + x_ + "," + margin + "l0," + chartHeight ).attr('stroke', "black");
 			
 			// test
-			canvas.text(x_ , (margin + chartHeight + 10), getTimeMilliseconds(dates[points - 1])).attr("text-anchor","middle");
+			//canvas.text(x_ , (margin + chartHeight + 10), getTimeMilliseconds(dates[points - 1])).attr("text-anchor","middle");
 
 		
+            
+            var lineTimeStamp, lineX, someLine;
+            
+            for (var i = 0; i < 20; i += 1) {
+            
+                //lineTimeStamp = (i * xAxisScaleTemplateSets[xAxisScalePoint].increment) + Math.ceil(startZoomedInTimeStamp / xAxisScaleTemplateSets[xAxisScalePoint].increment) * xAxisScaleTemplateSets[xAxisScalePoint].increment;
+                
+                lineTimeStamp = xAxisScaleTemplateSets[xAxisScalePoint].getTimeStamp(minMilliseconds, xAxisScaleTemplateSets[xAxisScalePoint].increment * i);
+                
+                //alert(lineTimeStamp);		
+                
+                if (lineTimeStamp <= maxMilliseconds) {
+                
+                    lineX = (((lineTimeStamp - minMilliseconds) * xMultiplier) + margin);
+                    
+                    if (lineTimeStamp > minMilliseconds && lineTimeStamp < maxMilliseconds) {
+                        canvas.path("M" + lineX + "," + margin + "v" + chartHeight).attr({
+                            "stroke-width": 1
+                        });
+                    }
+                    if (lineTimeStamp >= minMilliseconds) {
+                        canvas.text(lineX, Math.round(10 + margin + chartHeight), xAxisScaleTemplateSets[xAxisScalePoint].getText(lineTimeStamp)).attr({
+                            "text-anchor": "center"
+                        });
+                    }
+                }
+                else {
+                    break;
+                }
+            }
 			
 
 			
