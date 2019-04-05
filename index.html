@@ -8,7 +8,7 @@
         <script src="libraries/jquery-2.0.0.min.js">
         </script>
         <style>
-            
+
             *, body {
                 margin: 0;
                 padding: 0;
@@ -17,15 +17,40 @@
                 width: 100%;
                 height: 100%;
             }
+
+            .new_chart {
+              border: none;
+              background-color: inherit;
+              padding: 14px 28px;
+              font-size: 16px;
+              cursor: pointer;
+              display: inline-block;
+              background-color: green;
+              color: white;
+              position: absolute;
+              left: 20px;
+              border-radius:0.3em;
+              top:20px;
+              z-index: 55;
+          }
+
+            .new_chart:hover{
+              background-color:#4095c6;
+          }
+
         </style>
     </head>
     <body>
+
+        <button class="new_chart" onclick="reloadPage()">Next graph</button>
         <div id='graphic'>
         </div>
         <script>
-            
-			
-			
+
+        function reloadPage(){
+          window.location.reload(false);
+        }
+
 			///////////////////////////////////////////////////////////////////////////////////////
 			// How tine stamps work...
 			//var myDate = new Date();
@@ -36,35 +61,35 @@
 			//alert( myDay + ',' + myMonth + ',' + myYear);
 			//alert( milliseconds + " " + new Date(myYear,myMonth,myDay).getTime());
 			///////////////////////////////////////////////////////////////////////////////////////
-			
-			
+
+
             var DAY = 1000 * 60 * 60 * 24;
             var HOUR = 1000 * 60 * 60;
             var YEAR = 1000 * 60 * 60 * 24 * 365.25;
-            
+
             var DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
             var MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-            
+
             var getHours = function(time){
                 return (new Date(time).getHours()) + ":00";
             };
-            
+
             var getWeekDays = function(time){
                 return DAYS[new Date(time).getDay()];
             };
-            
+
             var getMonthDays = function(time){
                 return new Date(time).getDate();
             };
-            
+
             var getMonths = function(time){
                 return MONTHS[new Date(time).getMonth()];
             };
-            
+
             var getYears = function(time){
                 return new Date(time).getFullYear();
             };
-            
+
             var getMonthTimeStamp = function(time, monthsNo){
                 var someMonths, someYears;
                 someYears = new Date(time).getFullYear();
@@ -77,28 +102,28 @@
                 return (new Date(someYears, someMonths, 1).getTime());
                 //return time;
             };
-            
+
             var getYearTimeStamp = function(time, yearsNo){
                 var someYears = new Date(time).getFullYear();
                 someYears += yearsNo;
                 return new Date(someYears, 0, 1).getTime();
                 //return time;
             };
-            
+
             var getHourTimeStamp = function(time, hoursNo){
                 var someDate = new Date(time);
                 return new Date(someDate.getFullYear(), someDate.getMonth(), someDate.getDate(), someDate.getHours()).getTime() + (hoursNo * HOUR);
-                
+
             };
-            
+
             var getDayTimeStamp = function(time, daysNo){
                 var someDate = new Date(time);
                 return new Date(someDate.getFullYear(), someDate.getMonth(), someDate.getDate()).getTime() + (daysNo * DAY);
             };
-		
-			
-			
-            
+
+
+
+
             var xAxisScaleTemplateSets = [{
                 "scope": DAY / 12,
                 "getText": getHours,
@@ -202,21 +227,21 @@
                 "getTimeStamp": getYearTimeStamp,
                 "increment": 50
             }];
-            
-            			
-			
-			
+
+
+
+
             function getTimeMilliseconds(timeStamp){
-            
+
                 var date_ = (timeStamp).split("/");
                 //console.log( date_ + " " + new Date(date_[2],date_[1] - 1,date_[0]));
-                
+
                 milliseconds = (new Date(date_[2], date_[1] - 1, date_[0]).getTime());
-                
+
                 return "" + milliseconds;
             }
-			
-			
+
+
             // work out spaces on y axis
             function findNiceRoundStep(delta, preferedStep){
                 var log10, n, p, p10, digit;
@@ -231,11 +256,11 @@
                 if (digit < 1.5) {
                     digit = 1;
                 }
-                else 
+                else
                     if (digit < 3.5) {
                         digit = 2;
                     }
-                    else 
+                    else
                         if (digit < 7.5) {
                             digit = 5;
                         }
@@ -246,13 +271,13 @@
                         }
                 return digit * p10;
             }
-			
-            
+
+
             function getNumberView(startValue, numberValue, endValue){
-            
+
                 var divideBy, reternValue, regex, negativeNumber = false, endAbbreviation = "", i, devider = "1", codes;
-                
-                
+
+
                 // verifying arguments
                 startValue = startValue || "";
                 numberValue = numberValue || 0;
@@ -266,8 +291,8 @@
                         endValue = "";
                     }
                 }
-                
-                
+
+
                 codes = [{
                     zeros: 0,
                     name: "",
@@ -279,7 +304,7 @@
                 }, {
                     zeros: 6,
                     name: "million",
-                    abbreviation: "MM"
+                    abbreviation: "M"
                 }, {
                     zeros: 9,
                     name: "billion",
@@ -301,76 +326,76 @@
                     name: "sextillion",
                     abbreviation: "Stn"
                 }];
-                
+
                 reternValue = Math.abs(numberValue);
-                
+
                 if (reternValue !== numberValue) {
                     negativeNumber = true;
                 }
-                
+
                 reternValue = Math.ceil(reternValue);
                 reternValue = reternValue.toString();
                 endAbbreviation = Math.floor(Number(reternValue.length) / 3);
-                
+
                 for (i = 0; i < codes[Math.floor(Number(reternValue.length - 1) / 3)].zeros; i += 1) {
                     devider += "0";
                 }
-                
+
                 reternValue = Number(numberValue) / Number(devider);
                 reternValue = Math.abs(reternValue);
-                
+
                 if (reternValue >= 100 && endAbbreviation > 0) {
                     endAbbreviation -= 1;
                 }
                 endAbbreviation = codes[endAbbreviation].abbreviation;
-                
+
                 // get first 8 letters
                 regex = /^[\s\S]{0,8}/;
                 reternValue = regex.exec(reternValue).toString();
-                
+
                 reternValue = Number(reternValue);
-                
+
                 divideBy = 100;
-                
+
                 if (reternValue >= 10) {
                     divideBy = 10;
                 }
                 if (reternValue >= 100) {
                     divideBy = 1;
                 }
-                
+
                 reternValue = Number(reternValue) * divideBy;
-                
+
                 reternValue = Math.round(reternValue);
-                
+
                 reternValue = reternValue / divideBy;
-                
+
                 if (reternValue === 0) {
                     negativeNumber = false;
                 }
                 if (reternValue != 0) {
 					reternValue = (startValue + reternValue + endValue + endAbbreviation).toString();
 				}
-				
+
                 if (negativeNumber) {
                     reternValue = "-" + reternValue;
                 }
-                
+
                 return reternValue;
             }
-			
-			
+
+
 			var area,points, minYdummyData,maxYdummyData;
-			
+
             function randomNumber(from, to){
                 return Math.floor(Math.random() * (to - from + 1) + from);
             }
-			
+
 			points = randomNumber(2, 200);
 			area = randomNumber(0, 1);
 			minYdummyData = randomNumber(-50000000, 50000000);
 			maxYdummyData =  minYdummyData + (randomNumber(-50000000, 50000000));
-			
+
             //make a data set
             var data = [];
             var dates = [];
@@ -380,45 +405,45 @@
 				dates.push(randomNumber(1, 28) + "/" + randomNumber(1, 12) + "/" + years);
 				years += randomNumber(1, 3);
             }
-			
+
 			var minMilliseconds,maxMilliseconds;
-			
+
 			// NOT WORKING!!!
             for (var i = 0; i < points; i++) {
-				
+
 				milliseconds = getTimeMilliseconds(dates[i]);
-				
+
 				if(i == 0){
 					minMilliseconds = milliseconds;
 					maxMilliseconds = milliseconds;
 				}
-				
+
 				if(minMilliseconds >= milliseconds){
 					minMilliseconds = milliseconds;
 				}
-				
+
 				if(maxMilliseconds <= milliseconds){
 					maxMilliseconds = milliseconds;
-				}				
-				
+				}
+
             }
-			
+
             minMilliseconds = Number(getTimeMilliseconds(dates[0]));
             maxMilliseconds = Number(getTimeMilliseconds(dates[dates.length - 1]));
-			
-			
+
+
 			var xScope = maxMilliseconds - minMilliseconds;
-			
-			
+
+
 			console.log( '--------------' );
 			console.log( minMilliseconds );
-			console.log(getTimeMilliseconds(dates[0]) );			
+			console.log(getTimeMilliseconds(dates[0]) );
 			console.log( maxMilliseconds );
-			console.log(getTimeMilliseconds(dates[dates.length - 1]) );			
+			console.log(getTimeMilliseconds(dates[dates.length - 1]) );
 			console.log( xScope );
 			console.log( '--------------' );
-			
-			
+
+
             var xAxisScalePoint = 0;
             for (i = 1; i < xAxisScaleTemplateSets.length; i += 1) {
                 if (xAxisScaleTemplateSets[i].scope > xScope) {
@@ -426,128 +451,132 @@
                 }
                 xAxisScalePoint = i;
             }
-			
+
 			console.log(xAxisScaleTemplateSets[xAxisScalePoint].alert);
-				
-			
-			
+
+
+
 			var pageHeight = $(window).height();
 			var pageWidth= $(window).width();
-			
-			
-            
+
+
+
             var canvas = Raphael("graphic", pageWidth , pageHeight );
-			
+
 			var margin = pageWidth / 10;
-			
+
+      if (margin < 80 ){
+        margin = 80;
+      }
+      
 			var chartX = margin;
 			var chartY = margin;
 			var chartWidth = pageWidth - margin - margin;
 			var chartHeight = pageHeight - margin - margin;
-			
+
 			// background
 			canvas.path("M" + margin + "," + margin + "l" + chartWidth + ",0l0,"  + chartHeight + "l-" + chartWidth + ",0z"  ).attr({'stroke-width':"0","fill":"#ededed"});
-			
+
 
 			var widthMultiplier = 0;
 			var heightMultiplier = 0;
-			
-			
+
+
 			var maxDataPoint = data[0];
 			var minDataPoint = data[0];
-			
-			
+
+
             for (var i = 0; i < data.length; i++) {
                 if(maxDataPoint < data[i]){
 					maxDataPoint = data[i];
 				}
                 if(minDataPoint > data[i]){
 					minDataPoint = data[i];
-				}				
-            }			
-			
+				}
+            }
+
 			//alert( maxDataPoint + " " + minDataPoint);
-			
-			
-			
+
+
+
 			var yScope = 0;
-			
+
 			var basePoint = margin + chartHeight;
-			
-			
+
+
 			if (maxDataPoint < -1 &&  minDataPoint < -1 ){
-				
+
 				//alert('both -' );
 				yScope = maxDataPoint - minDataPoint;
 				//alert(yScope);
-				
+
 				basePoint = margin;
-				
+
 			}  else if(maxDataPoint > -1 &&  minDataPoint > -1 ){
-				
+
 				//alert('both +' );
 				yScope = maxDataPoint - minDataPoint;
 				//alert(yScope);
-				
+
 				basePoint = margin + chartHeight;
-								
+
 			} else {
-				
+
 				//alert('one + and 1 -' );
 				yScope = maxDataPoint + ( -1 * minDataPoint);
 				//alert(yScope);
-								
+
 			}
-			
+
             var ySpaces = 5;
-			
+
             var ySpaceGaps = findNiceRoundStep(yScope, ySpaces);
-			
+
             var yLineBottomValue = Math.floor(minDataPoint / ySpaceGaps) * ySpaceGaps;
             var yLineTopValue = yLineBottomValue;
-			
+
 			for(var i = 0 ; i < (ySpaces * 2) ; i++){
-				
+
 				if(yLineTopValue < maxDataPoint){
 					yLineTopValue += ySpaceGaps;
 				} else {
 					break;
 				}
-				
+
 			}
-			
+
 			yScope = yLineTopValue - yLineBottomValue;
-			
-			
+
+
 			// test yScale
 			console.log(yLineTopValue);
 			console.log(maxDataPoint);
 			console.log(ySpaceGaps);
 			console.log(minDataPoint);
 			console.log(yLineBottomValue);
-			
-			
-			
+
+
+
 			var yMultiplier = chartHeight / yScope;
-			
+
 			var xMultiplier = chartWidth / xScope ;
 
-			
+
             for (var i = 0; i < data.length; i++) {
                 if(maxDataPoint < data[i]){
 					maxDataPoint = data[i];
 				}
                 if(minDataPoint > data[i]){
 					minDataPoint = data[i];
-				}				
+				}
             }
-			
+
 			if (maxDataPoint > -1 &&  minDataPoint < -1 ){
 				basePoint = margin + chartHeight -  ((yLineBottomValue * -1) * yMultiplier);
-			}			
-			
+			}
+
 			//line
-			//canvas.path("M" + margin + "," + margin + "l" + chartWidth + ","  + chartHeight  ).attr('stroke',"green");			
+			//canvas.path("M" + margin + "," + margin + "l" + chartWidth + ","  + chartHeight  ).attr('stroke',"green");
 
 			var path_ = "" + (margin+((  getTimeMilliseconds(dates[0]) - minMilliseconds ) * xMultiplier)) + "," + ((margin + chartHeight) -((data[0] - yLineBottomValue) * yMultiplier));
 
@@ -558,12 +587,12 @@
 				path_ += "L" + ( margin + x__ ) + "," + ((margin + chartHeight) - ((data[i] - yLineBottomValue) * yMultiplier));
 
             }
-			
+
 			var area_ = "M" + (margin+((  getTimeMilliseconds(dates[0]) - minMilliseconds ) * xMultiplier)) + "," + basePoint  + "L" + path_;
-			
+
 			area_ += "L" + (margin+((  getTimeMilliseconds(dates[dates.length - 1]) - minMilliseconds ) * xMultiplier)) + "," + basePoint;
-			
-            
+
+
             if (area) {
                 canvas.path(area_).attr({
                     'fill': "red",
@@ -574,36 +603,36 @@
             else {
                 canvas.path("M" + path_).attr('stroke', "red");
             }
-			
+
 			// draw horizontal lines
-			
-			
-			
+
+
+
 			// test yScale
 			console.log(yLineTopValue);
 			console.log(maxDataPoint);
 			console.log(ySpaceGaps);
 			console.log(minDataPoint);
-			console.log(yLineBottomValue);			
-			
-			
+			console.log(yLineBottomValue);
+
+
 
             for (var i = 0; i < (ySpaces * 2); i++) {
-            
+
                 if ((yLineBottomValue + (i * ySpaceGaps)) <= yLineTopValue) {
-                
+
                     var y_ = ((margin + chartHeight) - ((i * ySpaceGaps) * yMultiplier));
-                    
+
                     // line
                     canvas.path("M" + margin + "," + y_ + "l" + chartWidth + ",0").attr('stroke', "black");
-                    
+
                     // test
-                    canvas.text(margin - 5, y_, getNumberView("£", (yLineBottomValue + (i * ySpaceGaps))), "").attr("text-anchor", "end");                    
+                    canvas.text(margin - 5, y_, getNumberView("", (yLineBottomValue + (i * ySpaceGaps))), "").attr("text-anchor", "end");
                 }
                 else {
                     break;
                 }
-                
+
             }
 
 
@@ -612,33 +641,33 @@
 
 			// line
 			canvas.path("M" + x_ + "," + margin + "l0," + chartHeight ).attr('stroke', "black");
-			
+
 			// test
 			//canvas.text(x_ , (margin + chartHeight + 10), getTimeMilliseconds(dates[0])).attr("text-anchor","middle");
-			
+
 			x_ += (  getTimeMilliseconds(dates[dates.length - 1]) - minMilliseconds ) * xMultiplier;
 
 			canvas.path("M" + x_ + "," + margin + "l0," + chartHeight ).attr('stroke', "black");
-			
+
 			// test
 			//canvas.text(x_ , (margin + chartHeight + 10), getTimeMilliseconds(dates[points - 1])).attr("text-anchor","middle");
 
-		
-            
+
+
             var lineTimeStamp, lineX, someLine;
-            
+
             for (var i = 0; i < 20; i += 1) {
-            
+
                 //lineTimeStamp = (i * xAxisScaleTemplateSets[xAxisScalePoint].increment) + Math.ceil(startZoomedInTimeStamp / xAxisScaleTemplateSets[xAxisScalePoint].increment) * xAxisScaleTemplateSets[xAxisScalePoint].increment;
-                
+
                 lineTimeStamp = xAxisScaleTemplateSets[xAxisScalePoint].getTimeStamp(minMilliseconds, xAxisScaleTemplateSets[xAxisScalePoint].increment * i);
-                
-                //alert(lineTimeStamp);		
-                
+
+                //alert(lineTimeStamp);
+
                 if (lineTimeStamp <= maxMilliseconds) {
-                
+
                     lineX = (((lineTimeStamp - minMilliseconds) * xMultiplier) + margin);
-                    
+
                     if (lineTimeStamp > minMilliseconds && lineTimeStamp < maxMilliseconds) {
                         canvas.path("M" + lineX + "," + margin + "v" + chartHeight).attr({
                             "stroke-width": 1
@@ -654,41 +683,41 @@
                     break;
                 }
             }
-			
 
-			
+
+
 
 			//alert(data[0] + " " + data[data.length - 1]);
-            
+
             /*
             var total = 0;
-            
+
             for (var i = 0; i < data.length; i++) {
                 total += data[i];
             }
-            
+
             var multiplier = 360 / total;
-            
-            
+
+
             var innerRadius = radius / 1.3;
-            
-            
+
+
             var startAngle = 0;
             var endAngle = multiplier * data[0];
-            
+
             for (var i = 0; i < data.length; i++) {
-            
+
                 var path_ = segmentsPath(startAngle, endAngle, radius, radius, innerRadius, radius)
-                
+
                 canvas.path(path_);
-                
+
                 startAngle = 0 + endAngle;
                 endAngle += (multiplier * data[i + 1]);
-                
+
             }
             */
-			
-			
+
+
         </script>
     </body>
 </html>
